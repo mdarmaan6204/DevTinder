@@ -2,33 +2,35 @@ const express = require("express");
 
 const app = express();
 
-app.get("/user/:userId/:name/:age" , (req , res)=> {
-    console.log(req.params);
-    res.send({name:"Malik" , age:21})
+const {adminAuth} = require("./middlewares/auth");
+app.use("/admin", adminAuth);
+app.get("/admin/user", (req, res) => {
+  res.send("You are admin and get the user");
 });
 
-app.post("/user" , (req, res)=>{
+app.get("/admin/delete", (req, res) => {
+  res.send("You are admin and user is deleted");
+});
+
+app.use(
+  "/user",
+  (req, res, next) => {
     // Saving the data to DB
-    res.send("Data has been saved to DB Successfully");
-})
+    // res.send("Response from the first middleware");
+    next();
+  },
+  (req, res) => {
+    res.send("Response from the second middleware");
+  }
+);
 
-app.delete("/user" , (req, res)=>{
-    // Deleting the data from DB
-    res.send("Data has been deleted from DB Successfully");
-})
-
-app.patch("/user" , (req, res)=>{
-    // Updating the data in DB
-    res.send("Data has been updated in DB Successfully using patch method");
-}
-)
-
-app.use("/test",(req, res) =>{
-    res.send("test");
-})
-
-
-
+app.get("/user", (req, res, next) => {
+  console.log(" 1st Router handler");
+  next();
+});
+app.get("/user", (req, res, next) => {
+  console.log(" 2nd Router handler");
+});
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
