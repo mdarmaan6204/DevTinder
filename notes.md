@@ -215,15 +215,15 @@ _app.use("/admin", adminAuth);_
 
 - Use try and catch block and also handle at the end.. as let suppose anything breaks in the code and it is not handled by try and catch then it will handle at the end... for safer side..
 
-*app.get("/user", (req, res, next) => {
-  try{
-    res.send("User");
-  }
-  catch
-  {
-    res.status(500).send("Something went wrong");
-  }
-});*
+        * app.get("/user", (req, res, next) => {
+        try{
+            res.send("User");
+        }
+        catch
+        {
+            res.status(500).send("Something went wrong");
+        }
+        }); *
 
 - We handle it at the end of all route 
 *app.use("/" , (err , req , res , next)=>
