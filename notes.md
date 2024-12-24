@@ -211,7 +211,29 @@ _app.use("/admin", adminAuth);_
    <!-- Above one is  middleware -->
  _app.get("user/login" , (req,res)=> {})_ Here we dont use middleware as we dont need auth
 
- 
+ ## Error Handling
+
+- Use try and catch block and also handle at the end..
+app.get("/user", (req, res, next) => {
+  try{
+    res.send("User");
+  }
+  catch
+  {
+    res.status(500).send("Something went wrong");
+  }
+});
+
+- We handle it at the end of all route 
+ app.use("/" , (err , req , res , next)=>
+{
+    if(err)
+    {
+        <!-- Log the errors -->
+        res.status(500).send("Something went wrong");
+    }
+})
+
 
 
 
