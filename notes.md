@@ -112,7 +112,7 @@ app.get("/user/:userId" , (req , res)=> {
 - If we don't send the reponse _res.send("Hello from server")_ then it will keep sending request to the server till timeout
 - We have multiple route handler for single route using next
 
-app.use(
+*app.use(
   "/user",
   (req, res, next) => {
     // Saving the data to DB
@@ -122,18 +122,18 @@ app.use(
   (req, res) => {
     res.send("Response from the second middleware");
   }
-);
+);*
 
 It is same as 
 
-app.get("/user",(req,res,next)=>{
+*app.get("/user",(req,res,next)=>{
     console.log(" 1st Router handler");
     next();
 })
 app.get("/user",(req,res,next)=>{
     console.log(" 2nd Router handler");
 })
-
+*
 
 - If we send response in the first route handler then it will not go to the next router handler if there will be next() otherwise not.
  But if we not send the response then it will go to the next route handle if next() is being called..
@@ -144,15 +144,15 @@ app.get("/user",(req,res,next)=>{
   _app.use("/route" ,rh1 , rh2 , rh3, rh4,rh5)_
 
 - We can wrap some route handler in array , all are valid 
-    _app.use("/route" ,[rh1 , rh2 , rh3, rh4,rh5])_
+    *_app.use("/route" ,[rh1 , rh2 , rh3, rh4,rh5])_
     _app.use("/route" ,rh1 , [rh2 , rh3], rh4,rh5)_
-    _app.use("/route" ,[rh1 , rh2 , rh3], rh4,rh5)_
+    _app.use("/route" ,[rh1 , rh2 , rh3], rh4,rh5)_*
 
  - Middlewares are the route handler function , all the rh fn before the rh who sends the response.
 
  - Why do we need middlewares 
 
-app.get("/admin/user", (req,res)=>{
+*app.get("/admin/user", (req,res)=>{
     // Check for is user is admin or not
     const token = "xyz";
     if(token === "xyz")
@@ -176,11 +176,11 @@ app.get("/admin/delete", (req,res)=>{
     {
         res.status(401).send("You are not admin");
     }
-})
+})*
 
 - In the above exmple we are keep writing again and again to check user is admin or not which is not good , here middlewares comes into the picture
 
-app.use("/admin", (req, res, next) => {
+*app.use("/admin", (req, res, next) => {
   // Check for is user is admin or not
   const token = "xyz";
   if (token !== "xyz") {
@@ -194,7 +194,7 @@ app.get("/admin/user", (req, res) => {
 
 app.get("/admin/delete", (req, res) => {
   res.send("You are admin and user is deleted");
-});
+});*
 
 - Now middlewares first check for the user is a valid admin or not then if he is valid then next() route handler will get called else error of unauthorised is send.
 
@@ -213,8 +213,9 @@ _app.use("/admin", adminAuth);_
 
  ## Error Handling
 
-- Use try and catch block and also handle at the end..
-app.get("/user", (req, res, next) => {
+- Use try and catch block and also handle at the end.. as let suppose anything breaks in the code and it is not handled by try and catch then it will handle at the end... for safer side..
+
+*app.get("/user", (req, res, next) => {
   try{
     res.send("User");
   }
@@ -222,17 +223,17 @@ app.get("/user", (req, res, next) => {
   {
     res.status(500).send("Something went wrong");
   }
-});
+});*
 
 - We handle it at the end of all route 
- app.use("/" , (err , req , res , next)=>
+*app.use("/" , (err , req , res , next)=>
 {
     if(err)
     {
         <!-- Log the errors -->
         res.status(500).send("Something went wrong");
     }
-})
+})*
 
 
 
