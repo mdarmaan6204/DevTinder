@@ -294,7 +294,7 @@ _app.use("/admin", adminAuth);_
         module.exports = User;
 
 - First we create Schema of user then we create model from the schema and then export it        
-- ~Model~ => It is like class where we create instance of a class i.e user , that's why name should start with capital letter.
+- *Model* => It is like class where we create instance of a class i.e user , that's why name should start with capital letter.
 
 - CREATING /signup API
 
@@ -333,6 +333,34 @@ and __v is for version of the data , how many times it get uupdated.. etc..
             res.send(error.message);
         }
 
+# Diving into APIs
 
+### Pass dynamic data into API
+- TO send the dynamic object to save the data in DB we will pass via _req_ 
+- In postman go to _body_ then _raw_ then _JSON_ and add the json file like
+        {
+            name: "malik",
+            age : 22, 
+            email: "malik@gmail",
+            gender : "male",
+            password: "malik@123",
+        }
+- Now to access the data in server side , _req.body_ , but it is not in json file so to convert it we have to use middleware to convert the data in json 
+- Express provide middleare to convert to JSON :  
+        app.use(express.json());
 
+        app.post("/signup" , async (req , res) => {
 
+        console.log(req.body);
+            const userObj = new User(req.body);
+
+        try {
+            // Saving the user object to the database
+            await userObj.save();
+            res.send("User added Successfully");
+        } catch (error) {
+            res.send(error.message);
+        }
+        
+        })
+        
