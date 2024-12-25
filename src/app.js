@@ -6,6 +6,21 @@ const User = require("./models/user");
 
 app.use(express.json());
 
+// Fetching user with specific email
+app.get("/user" , async (req , res) => {
+  const userEmail = req.body.email;
+  try{
+    const users = await User.find();
+    if(users.length === 0)
+      res.status(404).send("No user found with this email");
+    else
+    res.send(users);
+  }
+  catch(error){
+    res.send("Something went wrong" + error.message);
+  }
+})
+
 app.post("/signup" , async (req , res) => {
 
   console.log(req.body);

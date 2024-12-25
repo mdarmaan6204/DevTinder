@@ -363,4 +363,24 @@ and __v is for version of the data , how many times it get uupdated.. etc..
         }
         
         })
-        
+
+## Creating feed API (GET all the data)
+
+// Fetching user with specific email
+        app.get("/user" , async (req , res) => {
+        const userEmail = req.body.email;
+        try{
+            const users = await User.find({email : userEmail});
+            if(users.length === 0)
+            res.status(404).send("No user found with this email");
+            else
+            res.send(users);
+        }
+        catch(error){
+            res.send("Something went wrong" + error.message);
+        }
+        })
+
+- To fetch all user   => const users = await User.find({el}); 
+- To fetch one user   => const users = await User.findOne({email : "malik@gmail"}); 
+- findOne return the any arbitary  object , find return an array which matches the conditons
