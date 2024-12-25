@@ -44,10 +44,10 @@ TO start the server after any change autmoatically install nodemon => _npm i -g 
 <!-- using npm run dev -->
 
 1. chnage the scripts of package.json
-   "scripts": {
-   "start": "node src/app,js",
-   "dev" : "nodemon src/app.js"
-   },
+    "scripts": {
+    "start": "node src/app,js",
+    "dev" : "nodemon src/app.js"
+    },
 
 npm run dev => will start the nodemon
 npm run start => will start using node
@@ -65,37 +65,37 @@ app.use("/test" , (req,res)=> {});
 
 <!-- This will match only the GET method API call to /user -->
 
-app.get("/test" , (req,res)=> {});
+    app.get("/test" , (req,res)=> {});
 
-app.get("/user" , (req , res)=> {
-res.send({name:"Malik" , age:21})
-});
+    app.get("/user" , (req , res)=> {
+    res.send({name:"Malik" , age:21})
+    });
 
-app.post("/user" , (req, res)=>{
-// Saving the data to DB
-res.send("Data has been saved to DB Successfully");
-})
+    app.post("/user" , (req, res)=>{
+    // Saving the data to DB
+    res.send("Data has been saved to DB Successfully");
+    })
 
-app.delete("/user" , (req, res)=>{
-// Deleting the data from DB
-res.send("Data has been deleted from DB Successfully");
-})
+    app.delete("/user" , (req, res)=>{
+    // Deleting the data from DB
+    res.send("Data has been deleted from DB Successfully");
+    })
 
-app.use("/test",(req, res) =>{
-res.send("test");
-})\*
+    app.use("/test",(req, res) =>{
+    res.send("test");
+    })\*
 
 - Routing path can be regex too..
 
 For API call _http://localhost:3000/user?user_id=101_ || _http://localhost:3000/user?user_id=101&name=Armaan_
 
--> To get the query we use req.query
+<!-- -> To get the query we use req.query -->
 app.get("/user" , (req , res)=> {
 console.log(req.query);
 res.send({name:"Malik" , age:21})
 });
 
-For dynamic API routing like
+<!-- For dynamic API routing like -->
 
 - _http://localhost:3000/user/101_ || _http://localhost:3000/user/101/armaan/20_
 - "/user/:userId" || "/user/:userId/:name/:age"
@@ -112,29 +112,27 @@ For dynamic API routing like
 - If we don't send the reponse _res.send("Hello from server")_ then it will keep sending request to the server till timeout
 - We have multiple route handler for single route using next
 
-_app.use(
-"/user",
-(req, res, next) => {
-// Saving the data to DB
-// res.send("Data has been saved to DB Successfully");
-next();
-},
-(req, res) => {
-res.send("Response from the second middleware");
-}
-);_
+    app.use(
+    "/user",
+    (req, res, next) => {
+    // Saving the data to DB
+    // res.send("Data has been saved to DB Successfully");
+    next();
+    },
+    (req, res) => {
+    res.send("Response from the second middleware");
+    }
+    );
 
 It is same as
 
-\*app.get("/user",(req,res,next)=>{
-console.log(" 1st Router handler");
-next();
-})
-app.get("/user",(req,res,next)=>{
-console.log(" 2nd Router handler");
-})
-
--
+    app.get("/user",(req,res,next)=>{
+    console.log(" 1st Router handler");
+    next();
+    })
+    app.get("/user",(req,res,next)=>{
+    console.log(" 2nd Router handler");
+    })
 
 * If we send response in the first route handler then it will not go to the next router handler if there will be next() otherwise not.
   But if we not send the response then it will go to the next route handle if next() is being called..
@@ -153,49 +151,49 @@ console.log(" 2nd Router handler");
 
 * Why do we need middlewares
 
-\*app.get("/admin/user", (req,res)=>{
-// Check for is user is admin or not
-const token = "xyz";
-if(token === "xyz")
-{
-res.send("You are admin");
-}
-else
-{
-res.status(401).send("You are not admin");
-}
-})
+      app.get("/admin/user", (req,res)=>{
+      // Check for is user is admin or not
+      const token = "xyz";
+      if(token === "xyz")
+      {
+      res.send("You are admin");
+      }
+      else
+      {
+      res.status(401).send("You are not admin");
+      }
+      })
 
-app.get("/admin/delete", (req,res)=>{
-// Check for is user is admin or not
-const token = "xyz";
-if(token === "xyz")
-{
-res.send("You are admin and user is deleted");
-}
-else
-{
-res.status(401).send("You are not admin");
-}
-})\*
+      app.get("/admin/delete", (req,res)=>{
+      // Check for is user is admin or not
+      const token = "xyz";
+      if(token === "xyz")
+      {
+      res.send("You are admin and user is deleted");
+      }
+      else
+      {
+      res.status(401).send("You are not admin");
+      }
+      })
 
 - In the above exmple we are keep writing again and again to check user is admin or not which is not good , here middlewares comes into the picture
 
-\*app.use("/admin", (req, res, next) => {
-// Check for is user is admin or not
-const token = "xyz";
-if (token !== "xyz") {
-res.status(401).send("You are not admin");
-}
-next();
-});
-app.get("/admin/user", (req, res) => {
-res.send("You are admin and get the user");
-});
+      app.use("/admin", (req, res, next) => {
+      // Check for is user is admin or not
+      const token = "xyz";
+      if (token !== "xyz") {
+      res.status(401).send("You are not admin");
+      }
+      next();
+      });
+      app.get("/admin/user", (req, res) => {
+      res.send("You are admin and get the user");
+      });
 
-app.get("/admin/delete", (req, res) => {
-res.send("You are admin and user is deleted");
-});\*
+      app.get("/admin/delete", (req, res) => {
+      res.send("You are admin and user is deleted");
+      });
 
 - Now middlewares first check for the user is a valid admin or not then if he is valid then next() route handler will get called else error of unauthorised is send.
 
@@ -216,7 +214,7 @@ _app.use("/admin", adminAuth);_
 
 - Use try and catch block and also handle at the end.. as let suppose anything breaks in the code and it is not handled by try and catch then it will handle at the end... for safer side..
 
-        *app.get("/user", (req, res, next) => {
+        app.get("/user", (req, res, next) => {
         try{
             res.send("User");
         }
@@ -224,17 +222,17 @@ _app.use("/admin", adminAuth);_
         {
             res.status(500).send("Something went wrong");
         }
-        });*
+        });
 
 - We handle it at the end of all route
-  \_app.use("/" , (err , req , res , next)=>
-  {
-  if(err)
-  {
-  <!-- Log the errors -->
-  res.status(500).send("Something went wrong");
-  }
-  })\_
+      app.use("/" , (err , req , res , next)=>
+      {
+      if(err)
+      {
+      <!-- Log the errors -->
+      res.status(500).send("Something went wrong");
+      }
+      })
 
 # Database , Schema & Models and Mongoose
 
@@ -242,18 +240,16 @@ _app.use("/admin", adminAuth);_
 - Install mongoose => _*npm i mongoose*_
 
 - In _database.js_
-  \*const mongoose = require("mongoose");
-
-const connectDb = async () => {
-await mongoose.connect(
-"mongodb+srv://malikgrd786:malikgrd786@namastenode.dpa3l.mongodb.net/devTinder"
-);
-};
-
-module.exports = connectDb;\*
+    const mongoose = require("mongoose");
+    const connectDb = async () => {
+    await mongoose.connect(
+    "mongodb+srv://malikgrd786:malikgrd786@namastenode.dpa3l.mongodb.net/devTinder"
+    );
+    };
+    module.exports = connectDb;
 
 - First we will connect to the DB then we will start listening to the server . So in app.js
-        *const express = require("express");
+        const express = require("express");
         const app = express();
         const connectDb = require("./config/database");
 
@@ -266,14 +262,14 @@ module.exports = connectDb;\*
         })
         .catch((err) => {
             console.error("Error connecting to database", err);
-        });*
+        });
 
  ## Models & Schema
 
  - For models we create a folder inside src _models_ 
  - Inside models we are creating different files according to diffrent models , here user.js
 
-        *const mongoose = require("mongoose");
+        const mongoose = require("mongoose");
         const userSchema = new mongoose.Schema({
         name: {
             type: String,
@@ -295,14 +291,14 @@ module.exports = connectDb;\*
 
         const User = mongoose.model("User", userSchema);
 
-        module.exports = User;*
+        module.exports = User;
 
 - First we create Schema of user then we create model from the schema and then export it        
 - ~Model~ => It is like class where we create instance of a class i.e user , that's why name should start with capital letter.
 
 - CREATING /signup API
 
-        *const User = require("./models/user");
+        const User = require("./models/user");
 
         app.post("/signup" , async (req , res) => {
 
@@ -318,7 +314,7 @@ module.exports = connectDb;\*
         await userObj.save();
         res.send("User added Successfully");
 
-        })*
+        })
 
 - Most of function in Mongoose returns a promise
 - Since save() fn. return a promise we write await and make the function async..
@@ -329,13 +325,13 @@ and __v is for version of the data , how many times it get uupdated.. etc..
 - It is prefered that chnage the id and __v
 - We should write the database fn. in try catch block
 
-        *try {
+        try {
             // Saving the user object to the database
             await userObj.save();
             res.send("User added Successfully");
         } catch (error) {
             res.send(error.message);
-        }*
+        }
 
 
 
