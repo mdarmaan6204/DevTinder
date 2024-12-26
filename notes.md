@@ -470,6 +470,7 @@ Refer this website :- [Mongoose](https://mongoosejs.com/docs/queries.html)
         default: Date.now,
     },
 
+
 - Method 1 is easy to use and MongoDB will handle that so we are using M1;
 
 #### Final Schema : 
