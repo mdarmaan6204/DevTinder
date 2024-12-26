@@ -581,6 +581,8 @@ const mongoose = require("mongoose");
 - **SCHEMA LEVEL VALIDATION**
 
 - Validator should be used in the end of field
+
+
         const validator = require("validator");
         email: {
         type: String,
