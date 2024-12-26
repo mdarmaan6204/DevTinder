@@ -1,9 +1,12 @@
 const express = require("express");
 const app = express();
 const connectDb = require("./config/database");
-
+const { signUpValidation } = require("./utils/validations");
 const User = require("./models/user");
+
 app.use(express.json());
+
+
 
 app.patch("/user/:userId", async (req, res) => {
   const userId = req.params?.userId;
@@ -26,8 +29,7 @@ app.patch("/user/:userId", async (req, res) => {
     if (!isUpdateAllowed) {
       throw new Error(" Update not allowed");
     }
-    if(data.skills?.length > 10)
-    {
+    if (data.skills?.length > 10) {
       throw new Error("SKills should not be more than 10");
     }
 
@@ -65,19 +67,6 @@ app.get("/user", async (req, res) => {
     else res.send(users);
   } catch (error) {
     res.send("Something went wrong" + error.message);
-  }
-});
-
-app.post("/signup", async (req, res) => {
-  console.log(req.body);
-  const userObj = new User(req.body);
-
-  try {
-    // Saving the user object to the database
-    await userObj.save();
-    res.send("User added Successfully");
-  } catch (err) {
-    res.send(err.message);
   }
 });
 

@@ -616,3 +616,60 @@ const mongoose = require("mongoose");
             }
         },
         },
+
+
+# Encrypting Password
+
+1. Validating the data
+    - For any data from (req.body) , we apply some validation. And for that validation we create some helper fn. in a different folder (Scalable) inside the _src_ , _utils_ , 
+    there will be _validation.js_ where all the validation fn. are written.
+
+        const validator = require("validator");
+        const signUpValidation = (req) => {
+        const { fname, lname, email, password } = req.body;
+        if (!fname || !lname) {
+            throw new Error("Enter a valid name");
+        } else if (!validator.isEmail(email)) {
+            throw new Error("Enter a valid email");
+        } else if (!validator.isStrongPassword(password)) {
+            throw new Error("Enter a strong password");
+        }
+        };
+        module.exports = { signUpValidation };
+
+
+
+
+2. Encypting the data
+    - For encryption we will use _Bcrypt_ package => _npm i bcrypt_
+    - [Bcrypt](https://www.npmjs.com/package/bcrypt)
+
+        bcrypt.hash(myPlaintextPassword, saltRounds).then(function(hash) {
+            // Store hash in your password DB.
+        });
+
+    - Once the password is encypted then we can't decrypt it.
+        const bcrypt = require("bcrypt");
+        app.post("/signup", async (req, res) => {
+        try {
+            // Validate the data
+            signUpValidation(req);
+            const { fname, lname, email, password } = req.body;
+
+            // Encypt the data
+            const hashPassword = await bcrypt.hash(password, 10);
+
+            const userObj = new User({
+            fname,
+            lname,
+            email,
+            password: hashPassword,
+            });
+
+            // Saving the user object to the database
+            await userObj.save();
+            res.send("User added Successfully");
+        } catch (err) {
+            res.send(err.message);
+        }
+        });
