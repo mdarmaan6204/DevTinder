@@ -566,18 +566,21 @@ const mongoose = require("mongoose");
         });
         console.log(user);
         res.send("User updated successfully");
-    } catch (err) {
+    } 
+    catch (err)
+    {
         res.send("Something went wrong" + err.message);
     }
     });
 
 ### Validating using library
-- Validating an email is tough job , but there is a library know as _validator_ which is use for validating complex thing easyily
+- Validating an email is tough job , but there is a library know as _validator_ which is use for validating complex thing easyily ( **NEVER TRUST req.body** )
 - First install it _npm i validator_
 
 [Validator Github Repo](https://github.com/validatorjs/validator.js)
 
 - **SCHEMA LEVEL VALIDATION**
+<!-- Validator should be used in the end of field... -->
 
     const validator = require("validator");
     email: {
@@ -603,8 +606,6 @@ const mongoose = require("mongoose");
         }
       },
     },
-    <!-- Validator should be used in the end of field... -->
-
     password: {
       type: String,
       validate(value){
