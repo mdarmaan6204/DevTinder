@@ -580,7 +580,8 @@ const mongoose = require("mongoose");
 [Validator Github Repo](https://github.com/validatorjs/validator.js)
 -  -->
 - **SCHEMA LEVEL VALIDATION**
-- Validator should be used in the end of field...
+
+- Validator should be used in the end of field
 
     const validator = require("validator");
     email: {
@@ -597,21 +598,21 @@ const mongoose = require("mongoose");
     },
 
     photoUrl: {
-      type: String,
-      default:
+        type: String,
+        default:
         "https://www.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_134151661.htm",
-      validate(value) {
+        validate(value) {
         if (!validator.isURL(value)) {
-          throw new Error(" Invalid Photo URL");
+            throw new Error(" Invalid Photo URL");
         }
-      },
+        },
     },
     password: {
-      type: String,
-      validate(value){
+        type: String,
+        validate(value){
         if(!validator.isStrongPassword(value))
         {
-          throw new Error ("Enter a strong Password");
+            throw new Error ("Enter a strong Password");
         }
-      }
+        }
     },
