@@ -534,9 +534,9 @@ const mongoose = require("mongoose");
 - We should not allow to send irrelevant data , allow only some filed to update...
 - Never trust user , any attacker can send vunerable data so try to add validation and API should be 100% safe.
 
-    ```app.patch("/user/:userId", async (req, res) => {
-    const userId = req.params?.userId;
-    const data = req.body;
+        ```app.patch("/user/:userId", async (req, res) => {
+        const userId = req.params?.userId;
+        const data = req.body;
 
         try {
         const ALLOWED_UPDATES_FIELDS = [
