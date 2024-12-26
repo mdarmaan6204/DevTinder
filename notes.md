@@ -623,6 +623,7 @@ const mongoose = require("mongoose");
 1. Validating the data
     - For any data from (req.body) , we apply some validation. And for that validation we create some helper fn. in a different folder (Scalable) inside the _src_ , _utils_ , 
     there will be _validation.js_ where all the validation fn. are written.
+>
 
         const validator = require("validator");
         const signUpValidation = (req) => {
@@ -649,6 +650,7 @@ const mongoose = require("mongoose");
         });
 
     - Once the password is encypted then we can't decrypt it.
+    >
         const bcrypt = require("bcrypt");
         app.post("/signup", async (req, res) => {
         try {
@@ -671,5 +673,32 @@ const mongoose = require("mongoose");
             res.send("User added Successfully");
         } catch (err) {
             res.send(err.message);
+        }
+        });
+
+## Login API 
+
+        app.post("/login", async (req, res) => {
+        try {
+            const { email, password } = req.body;
+
+            if (!email || !password) {
+            throw new Error("Enter valid email and password");
+            }
+
+            const user = await User.findOne({ email: email });
+
+            if (!user) {
+            throw new Error("User not found");
+            }
+            const isValidPassword = await bcrypt.compare(password, user.password);
+
+            if (!isValidPassword) {
+            throw new Error("Invalid password");
+            } else {
+            res.send("User logged in successfully");
+            }
+        } catch (err) {
+            res.status(400).send("ERROR : " + err.message);
         }
         });
