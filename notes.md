@@ -538,7 +538,7 @@ const mongoose = require("mongoose");
     const userId = req.params?.userId;
     const data = req.body;
 
-    try {
+        try {
         const ALLOWED_UPDATES_FIELDS = [
         "fname",
         "lname",
@@ -566,12 +566,12 @@ const mongoose = require("mongoose");
         });
         console.log(user);
         res.send("User updated successfully");
-    } 
-    catch (err)
-    {
-        res.send("Something went wrong" + err.message);
-    }
-    });
+        } 
+        catch (err)
+        {
+            res.send("Something went wrong" + err.message);
+        }
+        });
 
 ### Validating using library
 - Validating an email is tough job , but there is a library know as _validator_ which is use for validating complex thing easyily ( **NEVER TRUST req.body** )
