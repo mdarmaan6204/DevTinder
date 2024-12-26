@@ -89,17 +89,17 @@ app.use("/test" , (req,res)=> {});
 
 For API call _http://localhost:3000/user?user_id=101_ || _http://localhost:3000/user?user_id=101&name=Armaan_
 
-<!-- -> To get the query we use req.query -->
-app.get("/user" , (req , res)=> {
-console.log(req.query);
-res.send({name:"Malik" , age:21})
-});
+    <!-- To get the query we use req.query -->
+    app.get("/user" , (req , res)=> {
+    console.log(req.query);
+    res.send({name:"Malik" , age:21})
+    });
 
 <!-- For dynamic API routing like -->
 
 - _http://localhost:3000/user/101_ || _http://localhost:3000/user/101/armaan/20_
 - "/user/:userId" || "/user/:userId/:name/:age"
-  We get user id by _req.param_
+>  We get user id by _req.param_
   app.get("/user/:userId" , (req , res)=> {
   console.log(req.params);
   res.send({name:"Malik" , age:21})
@@ -115,16 +115,16 @@ res.send({name:"Malik" , age:21})
     app.use(
     "/user",
     (req, res, next) => {
-    // Saving the data to DB
-    // res.send("Data has been saved to DB Successfully");
-    next();
+        // Saving the data to DB
+        // res.send("Data has been saved to DB Successfully");
+        next();
     },
     (req, res) => {
-    res.send("Response from the second middleware");
+        res.send("Response from the second middleware");
     }
     );
 
-It is same as
+    <!-- It is same as -->
 
     app.get("/user",(req,res,next)=>{
     console.log(" 1st Router handler");
@@ -199,16 +199,16 @@ It is same as
 
 - Best Practice to write middlewares is create a middlewares folder in src and for each middleware fn create a file , write the fn and export it and import in the app.js
 
-_const {adminAuth} = require("./middlewares/auth");_
-_app.use("/admin", adminAuth);_
+ const { adminAuth } = require("./middlewares/auth");
+app.use("/admin", adminAuth);
 
-- Verifying user too..
-  _const {adminAuth , userAuth} = require("./middlewares/auth");_
-  _app.use("/admin", adminAuth);_
-  ...
-  _app.get("/user", userAuth , (req, res)=> {});_
-    <!-- Above one is  middleware -->
-  _app.get("user/login" , (req,res)=> {})_ Here we dont use middleware as we dont need auth
+    // - Verifying user too..
+    const { adminAuth, userAuth } = require("./middlewares/auth");
+    app.use("/admin", adminAuth);
+    app.get("/user", userAuth, (req, res) => {});
+    // <!-- Above one is  middleware -->
+    app.get("user/login", (req, res) => {});
+    // <!-- Here we dont use middleware as we dont need auth -->
 
 ## Error Handling
 
@@ -338,13 +338,15 @@ and __v is for version of the data , how many times it get uupdated.. etc..
 ### Pass dynamic data into API
 - TO send the dynamic object to save the data in DB we will pass via _req_ 
 - In postman go to _body_ then _raw_ then _JSON_ and add the json file like
-        {
-            name: "malik",
-            age : 22, 
-            email: "malik@gmail",
-            gender : "male",
-            password: "malik@123",
-        }
+
+    {
+        name: "malik",
+        age : 22, 
+        email: "malik@gmail",
+        gender : "male",
+        password: "malik@123",
+    }
+
 - Now to access the data in server side , _req.body_ , but it is not in json file so to convert it we have to use middleware to convert the data in json 
 - Express provide middleare to convert to JSON :  
         app.use(express.json());
@@ -368,20 +370,19 @@ and __v is for version of the data , how many times it get uupdated.. etc..
 
 Refer this website :- [Mongoose](https://mongoosejs.com/docs/queries.html)
 
-> Fetching user with specific email
-    app.get("/user" , async (req , res) => {
+- Fetching user with specific email
+    app.get("/user", async (req, res) => {
     const userEmail = req.body.email;
-    try{
-        const users = await User.find({email : userEmail});
-        if(users.length === 0)
+    try {
+        const users = await User.find({ email: userEmail });
+        if (users.length === 0)
         res.status(404).send("No user found with this email");
-        else
-        res.send(users);
-    }
-    catch(error){
+        else res.send(users);
+    } catch (error) {
         res.send("Something went wrong" + error.message);
     }
-    })
+    });
+
 
 - To fetch all user   => const users = await User.find({el}); 
 - To fetch one user   => const users = await User.findOne({email : "malik@gmail"}); 
