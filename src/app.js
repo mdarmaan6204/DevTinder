@@ -5,11 +5,32 @@ const connectDb = require("./config/database");
 const User = require("./models/user");
 app.use(express.json());
 
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params?.userId;
   const data = req.body;
 
   try {
+    const ALLOWED_UPDATES_FIELDS = [
+      "fname",
+      "lname",
+      "age",
+      "skills",
+      "password",
+      "about",
+      "photoUrl",
+    ];
+
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES_FIELDS.includes(k)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error(" Update not allowed");
+    }
+    if(data.skills?.length > 10)
+    {
+      throw new Error("SKills should not be more than 10");
+    }
+
     const user = await User.findByIdAndUpdate({ _id: userId }, data, {
       returnDocument: "after",
       runValidators: true,
@@ -55,8 +76,8 @@ app.post("/signup", async (req, res) => {
     // Saving the user object to the database
     await userObj.save();
     res.send("User added Successfully");
-  } catch (error) {
-    res.send(error.message);
+  } catch (err) {
+    res.send(err.message);
   }
 });
 
@@ -70,4 +91,3 @@ connectDb()
   .catch((err) => {
     console.error("Error connecting to database", err);
   });
-

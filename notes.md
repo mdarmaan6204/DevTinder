@@ -528,3 +528,89 @@ const mongoose = require("mongoose");
     const userModel = mongoose.model("User", userSchema);
 
     module.exports = userModel;
+
+## More on validations (API level validation):
+
+- We should not allow to send irrelevant data , allow only some filed to update...
+- Never trust user , any attacker can send vunerable data so try to add validation and API should be 100% safe.
+
+    app.patch("/user/:userId", async (req, res) => {
+    const userId = req.params?.userId;
+    const data = req.body;
+
+    try {
+        const ALLOWED_UPDATES_FIELDS = [
+        "fname",
+        "lname",
+        "age",
+        "skills",
+        "password",
+        "about",
+        "photoUrl",
+        ];
+
+        const isUpdateAllowed = Object.keys(data).every((k) =>
+        ALLOWED_UPDATES_FIELDS.includes(k)
+        );
+        if (!isUpdateAllowed) {
+        throw new Error(" Update not allowed");
+        }
+        if(data.skills.length > 10)
+        {
+        throw new Error("SKills should not be more than 10");
+        }
+
+        const user = await User.findByIdAndUpdate({ _id: userId }, data, {
+        returnDocument: "after",
+        runValidators: true,
+        });
+        console.log(user);
+        res.send("User updated successfully");
+    } catch (err) {
+        res.send("Something went wrong" + err.message);
+    }
+    });
+
+### Validating using library
+- Validating an email is tough job , but there is a library know as _validator_ which is use for validating complex thing easyily
+- First install it _npm i validator_
+
+[Validator Github Repo](https://github.com/validatorjs/validator.js)
+
+- **SCHEMA LEVEL VALIDATION**
+
+    const validator = require("validator");
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true,
+        validate(value) {
+        if (!validator.isEmail(value)) {
+            throw new Error("Email is not valid");
+        }
+        },
+    },
+
+    photoUrl: {
+      type: String,
+      default:
+        "https://www.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_134151661.htm",
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error(" Invalid Photo URL");
+        }
+      },
+    },
+    <!-- Validator should be used in the end of field... -->
+
+    password: {
+      type: String,
+      validate(value){
+        if(!validator.isStrongPassword(value))
+        {
+          throw new Error ("Enter a strong Password");
+        }
+      }
+    },

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const validator = require("validator");
 const userSchema = new mongoose.Schema(
   {
     fname: {
@@ -21,6 +21,11 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Email is not valid");
+        }
+      },
     },
     gender: {
       type: String,
@@ -32,11 +37,22 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
+      validate(value){
+        if(!validator.isStrongPassword(value))
+        {
+          throw new Error ("Enter a strong Password");
+        }
+      }
     },
     photoUrl: {
       type: String,
       default:
         "https://www.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_134151661.htm",
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error(" Invalid Photo URL");
+        }
+      },
     },
     skills: {
       type: [String],
