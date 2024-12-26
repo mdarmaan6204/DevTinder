@@ -455,12 +455,12 @@ Refer this website :- [Mongoose](https://mongoosejs.com/docs/queries.html)
     });
 
 - For **timestamp** there are two ways
-1. This will store the createdAt , updatedAt value...
+- Method 1 :  This will store the createdAt , updatedAt value...
     const userSchema = new Schema({ name: String }, { timestamps: true });
 
 [Mongoose Timestamp Document ](https://mongoosejs.com/docs/timestamps.html)
 
-2. By adding data in Schema
+- Method 2:  By adding data in Schema
     createdAt: {
         type: Date,
         default: Date.now,
