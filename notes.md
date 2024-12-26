@@ -581,37 +581,36 @@ const mongoose = require("mongoose");
 - **SCHEMA LEVEL VALIDATION**
 
 - Validator should be used in the end of field
-
-    const validator = require("validator");
-    email: {
+        const validator = require("validator");
+        email: {
         type: String,
         required: true,
         unique: true,
         lowercase: true,
         trim: true,
         validate(value) {
-        if (!validator.isEmail(value)) {
+            if (!validator.isEmail(value)) {
             throw new Error("Email is not valid");
-        }
+            }
         },
-    },
+        },
 
-    photoUrl: {
+        photoUrl: {
         type: String,
         default:
-        "https://www.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_134151661.htm",
+            "https://www.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_134151661.htm",
         validate(value) {
-        if (!validator.isURL(value)) {
+            if (!validator.isURL(value)) {
             throw new Error(" Invalid Photo URL");
-        }
+            }
         },
-    },
-    password: {
+        },
+
+        password: {
         type: String,
-        validate(value){
-        if(!validator.isStrongPassword(value))
-        {
-            throw new Error ("Enter a strong Password");
-        }
-        }
-    },
+        validate(value) {
+            if (!validator.isStrongPassword(value)) {
+            throw new Error("Enter a strong Password");
+            }
+        },
+        },
