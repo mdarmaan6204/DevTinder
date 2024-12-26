@@ -59,14 +59,13 @@ npm run start => will start using node
 
 ## HTTP Methods :-
 
-\*<!-- This will match all the HTTP method API calls to /user -->
+    <!-- This will match all the HTTP method API calls to /user -->
 
-app.use("/test" , (req,res)=> {});
+    app.use("/test" , (req,res)=> {});
 
-<!-- This will match only the GET method API call to /user -->
+    <!-- This will match only the GET method API call to /user -->
 
     app.get("/test" , (req,res)=> {});
-
     app.get("/user" , (req , res)=> {
     res.send({name:"Malik" , age:21})
     });
@@ -430,3 +429,101 @@ Refer this website :- [Mongoose](https://mongoosejs.com/docs/queries.html)
     <!-- We can also but before in place of after to get before updation data , and it is by default -->
     
 - If we add extra data which is not in the schema then API will ignore that data
+
+
+# Data Sanitization & Schema Validation
+
+[Mongoose Schema Type](https://mongoosejs.com/docs/schematypes.html)
+
+> Some checks are :- 
+
+- **required** -> It means this field is mandatory to add new data in the MongoDB.
+- **unique** -> It means this field must be unique in the database.
+- **default** -> If this field is not entered then default value is assigned to the field.
+- **lowercase** -> It means this field store the data in after converting the field in lowercase.
+- **trim** -> This will remove the extra white spaces.
+- **minLength** -> This field must have minLength of that specific value.(For type:String)
+- **maxLength** -> This field must have maxLength of that specific value.
+- **min** -> This field must have min value of that specific value. (For type : Number)
+- **max** -> This field must have max value of that specific value. (For type : Number)
+
+- **validate** -> It is use to create custom validate fn. By default this validator works only for the new user created , to enable for existing user you have to add _options_ in the _app.patch_ runValidators : true like this 
+
+    const user = await User.findByIdAndUpdate({ _id: userId }, data, {
+        returnDocument: "after",
+        runValidators: true,
+    });
+
+- For **timestamp** there are two ways
+1. This will store the createdAt , updatedAt value...
+    const userSchema = new Schema({ name: String }, { timestamps: true });
+
+[Mongoose Timestamp Document ](https://mongoosejs.com/docs/timestamps.html)
+
+2. By adding data in Schema
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
+
+- Method 1 is easy to use and MongoDB will handle that so we are using M1;
+
+#### Final Schema : 
+const mongoose = require("mongoose");
+
+    const userSchema = new mongoose.Schema(
+    {
+        fname: {
+        type: String,
+        required: true,
+        minLength: 3,
+        maxLength: 50,
+        },
+        lname: {
+        type: String,
+        },
+        age: {
+        type: Number,
+        min: 18,
+        },
+        email: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+        trim: true,
+        },
+        gender: {
+        type: String,
+        validate(value) {
+            if (!["male", "female", "others"].includes(value)) {
+            throw new Error("Gender is not valid");
+            }
+        },
+        },
+        password: {
+        type: String,
+        },
+        photoUrl: {
+        type: String,
+        default:
+            "https://www.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_134151661.htm",
+        },
+        skills: {
+        type: [String],
+        },
+        about: {
+        type: String,
+        default: "Hey there I am using this app",
+        },
+    },
+    { timestamps: true }
+    );
+
+    const userModel = mongoose.model("User", userSchema);
+
+    module.exports = userModel;
