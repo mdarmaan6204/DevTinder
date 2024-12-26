@@ -583,7 +583,7 @@ const mongoose = require("mongoose");
 - Validator should be used in the end of field
 
 
-        const validator = require("validator");
+        ```const validator = require("validator");
         email: {
         type: String,
         required: true,
