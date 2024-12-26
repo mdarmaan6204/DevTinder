@@ -12,10 +12,10 @@
 
        const app = express();
 
-- TO send response from server (REQUEST HANDLER) -->
+- TO send response from server (REQUEST HANDL
 
 
-- It will listen to all route -->
+- It will listen to all ro
        app.use("/test",(req, res) =>{
            res.send("hello from server test");
        })
@@ -23,13 +23,13 @@
            res.send("hello from server hello hello hello");
        })
 
-- It will listen to all route so it should use at the end  if not then this will override all route  -->
+- It will listen to all route so it should use at the end  if not then this will override all rou
        app.use("/",(req, res) =>{
            res.send("hello from server");
        })
 
-- request handle is like wildcard and sequence matters like if else if and else  -->
-- /xyz matches with /xyz/2 , /xyz/fgld , /xyz/jfnusu/fknsu but not with /xyz2 -->
+- request handle is like wildcard and sequence matters like if else if and el
+- /xyz matches with /xyz/2 , /xyz/fgld , /xyz/jfnusu/fknsu but not with /x
 
 
        app.listen(3000, () => {
@@ -41,7 +41,7 @@ TO start the server after any change autmoatically install nodemon => _npm i -g 
 - g means intall it in global level...
 - to run the file => nodemon src/app.js
 
-- using npm run dev -->
+- using npm run 
 
 1. chnage the scripts of package.json
     "scripts": {
@@ -59,11 +59,11 @@ npm run start => will start using node
 
 ## HTTP Methods :-
 
-- This will match all the HTTP method API calls to /user -->
+- This will match all the HTTP method API calls to /u
 
     app.use("/test" , (req,res)=> {});
 
-- This will match only the GET method API call to /user -->
+- This will match only the GET method API call to /u
 
     app.get("/test" , (req,res)=> {});
     app.get("/user" , (req , res)=> {
@@ -88,13 +88,13 @@ npm run start => will start using node
 
 For API call _http://localhost:3000/user?user_id=101_ || _http://localhost:3000/user?user_id=101&name=Armaan_
 
-- To get the query we use req.query -->
+- To get the query we use req.qu
     app.get("/user" , (req , res)=> {
     console.log(req.query);
     res.send({name:"Malik" , age:21})
     });
 
-- For dynamic API routing like -->
+- For dynamic API routing l
 
 - _http://localhost:3000/user/101_ || _http://localhost:3000/user/101/armaan/20_
 - "/user/:userId" || "/user/:userId/:name/:age"
@@ -123,7 +123,7 @@ For API call _http://localhost:3000/user?user_id=101_ || _http://localhost:3000/
     }
     );
 
-- It is same as -->
+- It is same
 
     app.get("/user",(req,res,next)=>{
     console.log(" 1st Router handler");
@@ -205,9 +205,9 @@ app.use("/admin", adminAuth);
     const { adminAuth, userAuth } = require("./middlewares/auth");
     app.use("/admin", adminAuth);
     app.get("/user", userAuth, (req, res) => {});
-// - Above one is  middleware -->
+// - Above one is  middlew
     app.get("user/login", (req, res) => {});
-// - Here we dont use middleware as we dont need auth -->
+// - Here we dont use middleware as we dont need a
 
 ## Error Handling
 
@@ -228,7 +228,7 @@ app.use("/admin", adminAuth);
       {
       if(err)
       {
-- Log the errors -->
+- Log the err
       res.status(500).send("Something went wrong");
       }
       })
@@ -389,7 +389,7 @@ Refer this website :- [Mongoose](https://mongoosejs.com/docs/queries.html)
 
 ## Creating delete API
 
-- / Deleting user by id -->
+- / Deleting user by
     app.delete("/user" , async (req , res)=> {
     const userId = req.body.userId;
 
@@ -420,13 +420,13 @@ Refer this website :- [Mongoose](https://mongoosejs.com/docs/queries.html)
     }
     });
 
-- Here returned user is the before one -->
+- Here returned user is the before 
     const user = await User.findByIdAndUpdate({_id : userId} , data)
 
-- To get the updated user -->
+- To get the updated u
     const user = await User.findByIdAndUpdate({_id : userId} , data , {returnDocument : "after"})
 
-- We can also but before in place of after to get before updation data , and it is by default -->
+- We can also but before in place of after to get before updation data , and it is by defa
     
 - If we add extra data which is not in the schema then API will ignore that data
 
@@ -578,7 +578,6 @@ const mongoose = require("mongoose");
 - First install it _npm i validator_
 
 [Validator Github Repo](https://github.com/validatorjs/validator.js)
--  -->
 - **SCHEMA LEVEL VALIDATION**
 
 - Validator should be used in the end of field
