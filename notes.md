@@ -840,7 +840,7 @@ const mongoose = require("mongoose");
             
             const user = req.user;
             if (!user) {
-            throw new Error("User not found ");
+            throw new Error("User not found");
             }
             res.send(user);
         } catch (err) {
@@ -848,4 +848,11 @@ const mongoose = require("mongoose");
         }
         });
 
-        
+### Expire the cookie and JWT
+
+- For JWT token expire 
+    const token = jwt.sign({ _id: user._id }, "dev@tinder123" , {expiresIn : "1h"});
+
+- For expiring the [cookie](https://expressjs.com/en/5x/api.html#res.cookie) 
+    res.cookie("token", token, { expires: new Date(Date.now() + 900000) });
+
