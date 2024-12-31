@@ -775,6 +775,9 @@ const mongoose = require("mongoose");
         res.status(400).send("ERROR : " + err.message);
     }
     });
+
+**/profile API**
+
     app.get("/profile", async (req, res) => {
     // Validate the JWT token
     try 
