@@ -745,7 +745,8 @@ const mongoose = require("mongoose");
     app.use(cookieParser());
 
     app.post("/login", async (req, res) => {
-    try {
+    try 
+    {
         const { email, password } = req.body;
 
         if (!email || !password) {
@@ -770,31 +771,34 @@ const mongoose = require("mongoose");
 
         res.send("User logged in successfully");
         }
-    } catch (err) {
+    } 
+    catch (err) 
+    {
         res.status(400).send("ERROR : " + err.message);
     }
     });
 
     app.get("/profile", async (req, res) => {
     // Validate the JWT token
-    try {
+    try 
+    {
         const { token } = req.cookies;
-        if(!token)
-        {
+        if (!token) {
         throw new Error("Invalid token");
         }
         const decodedMessage = await jwt.verify(token, "dev@tinder123");
         const { _id } = decodedMessage;
         const user = await User.findById(_id);
-        if(!user)
-        {
+        if (!user) {
         throw new Error("User not found");
         }
         res.send(user);
-    } catch (err) {
+    } 
+    catch (err) 
+    {
         res.status(400).send("ERROR : " + err.message);
     }
     });
 
- 
-    
+
+### auth    
