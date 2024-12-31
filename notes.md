@@ -702,3 +702,99 @@ const mongoose = require("mongoose");
             res.status(400).send("ERROR : " + err.message);
         }
         });
+
+# Authentication , JWT  & Cookies
+
+- When we login in a website (ex- fb.com) then a request is send to the server to validate the user with email and password.
+- 2. If the password and mail is correct then
+- 3. Server will generate a web token know as JWT (JSOn Web Token) and send to the clinet as cookies.
+- 4. From now for every request made by the user , the request is attachd along with the cookie 
+- 5. Server will validate each time the JWT token if it is correct then it will proceed futher.
+- 6. And if the JWT token is expired/old then it will send a failed response.
+> **JWT** token is unique for every user.
+
+### Creating JWT token
+
+[Express JS res.cookie](https://expressjs.com/en/5x/api.html#res.cookie)
+
+    res.cookie(name, value [, options])
+
+
+**Read the cookie that we send**
+- We have to us a middleware to read the cookie [cookie-parser](https://www.npmjs.com/package/cookie-parser) _npm i cookie-parser_
+- When using cookie-parser middleware, this property is an object that contains cookies sent by the request. If the request contains no cookies, it defaults to {}.
+- If we dont add middleware it will return undefined.
+    _const cookie = req.cookies_
+
+## JWT
+- [JWT Website](https://jwt.io/)
+- There are secret message in the token , and there are three parts of a JWT token
+1. **HEADER:** ALGORITHM & TOKEN TYPE 
+2. **PAYLOAD**: DATA
+3. **VERIFY SIGNATURE**   
+- Read the doc for more information....
+
+- For generating the JWT token we use [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) , to install it _npm i jsonwebtoken_
+
+
+
+    const cookieParser = require("cookie-parser");
+    const jwt = require("jsonwebtoken");
+
+    app.use(express.json());
+    app.use(cookieParser());
+
+    app.post("/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+        throw new Error("Enter valid email and password");
+        }
+
+        const user = await User.findOne({ email: email });
+
+        if (!user) {
+        throw new Error("User not found");
+        }
+        const isValidPassword = await bcrypt.compare(password, user.password);
+
+        if (!isValidPassword) {
+        throw new Error("Invalid password");
+        } else {
+        // Generating a JWT token
+        const token = jwt.sign({ _id: user._id }, "dev@tinder123");
+        console.log(token);
+        // Adding the token to the cookie
+        res.cookie("token", token);
+
+        res.send("User logged in successfully");
+        }
+    } catch (err) {
+        res.status(400).send("ERROR : " + err.message);
+    }
+    });
+
+    app.get("/profile", async (req, res) => {
+    // Validate the JWT token
+    try {
+        const { token } = req.cookies;
+        if(!token)
+        {
+        throw new Error("Invalid token");
+        }
+        const decodedMessage = await jwt.verify(token, "dev@tinder123");
+        const { _id } = decodedMessage;
+        const user = await User.findById(_id);
+        if(!user)
+        {
+        throw new Error("User not found");
+        }
+        res.send(user);
+    } catch (err) {
+        res.status(400).send("ERROR : " + err.message);
+    }
+    });
+
+ 
+    

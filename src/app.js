@@ -4,8 +4,11 @@ const connectDb = require("./config/database");
 const { signUpValidation } = require("./utils/validations");
 const User = require("./models/user");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   try {
@@ -49,8 +52,35 @@ app.post("/login", async (req, res) => {
     if (!isValidPassword) {
       throw new Error("Invalid password");
     } else {
+      // Generating a JWT token
+      const token = jwt.sign({ _id: user._id }, "dev@tinder123");
+      console.log(token);
+      // Adding the token to the cookie
+      res.cookie("token", token);
+
       res.send("User logged in successfully");
     }
+  } catch (err) {
+    res.status(400).send("ERROR : " + err.message);
+  }
+});
+
+app.get("/profile", async (req, res) => {
+  // Validate the JWT token
+  try {
+    const { token } = req.cookies;
+    if(!token)
+    {
+      throw new Error("Invalid token");
+    }
+    const decodedMessage = await jwt.verify(token, "dev@tinder123");
+    const { _id } = decodedMessage;
+    const user = await User.findById(_id);
+    if(!user)
+    {
+      throw new Error("User not found");
+    }
+    res.send(user);
   } catch (err) {
     res.status(400).send("ERROR : " + err.message);
   }
