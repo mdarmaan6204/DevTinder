@@ -48,16 +48,15 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("User not found");
     }
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = await user.validatePassword(password);
 
     if (!isValidPassword) {
       throw new Error("Invalid password");
     } else {
       // Generating a JWT token
-      const token = jwt.sign({ _id: user._id }, "dev@tinder123");
-      console.log(token);
+      const token = await user.getJWT();
       // Adding the token to the cookie
-      res.cookie("token", token);
+      res.cookie("token", token, { expires: new Date(Date.now() + 900000) });
 
       res.send("User logged in successfully");
     }
@@ -68,7 +67,6 @@ app.post("/login", async (req, res) => {
 
 app.get("/profile", userAuth, async (req, res) => {
   try {
-    
     const user = req.user;
     if (!user) {
       throw new Error("User not found ");
