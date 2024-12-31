@@ -801,4 +801,51 @@ const mongoose = require("mongoose");
     });
 
 
-### auth    
+### auth Middleware
+- As we know all the API require validation of the token except the _/signup and /login_ API , for this we will create a middleware _auth_ to validate the user and then call the next request handler.
+- Like sending connections , likes , etc need to validate the user.. so in the _middleware_ folder , in _auth.js_
+
+        const jwt = require("jsonwebtoken");
+        const User = require("../models/user");
+        const userAuth = async (req, res, next) => {
+        try {
+            const { token } = req.cookies;
+            if (!token) {
+            throw new Error("Token is invalid!!!!");
+            }
+
+            const decodedObj = await jwt.verify(token, "dev@tinder123");
+            const { _id } = decodedObj;
+
+            const user = await User.findById(_id);
+
+            if (!user) {
+            throw new Erorr("User not exists.");
+            }
+            req.user = user;
+            next();
+        } catch (err) {
+            res.status(400).send("Error : " + err);
+        }
+        };
+
+        module.exports = { userAuth };
+
+- And in app.js for the API where userauth requires 
+
+
+        const { userAuth } = require("./middlewares/auth");
+        app.get("/profile", userAuth, async (req, res) => {
+        try {
+            
+            const user = req.user;
+            if (!user) {
+            throw new Error("User not found ");
+            }
+            res.send(user);
+        } catch (err) {
+            res.status(400).send("ERROR : " + err.message);
+        }
+        });
+
+        
