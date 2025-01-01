@@ -11,4 +11,22 @@ const signUpValidation = (req) => {
   }
 };
 
-module.exports = { signUpValidation };
+const validateProfileEdit = (req) => {
+  const allowedEditFileds = [
+    "fname",
+    "lname",
+    "age",
+    "photoUrl",
+    "skills",
+    "about",
+  ];
+
+  const isValidEdit = Object.keys(req.body).every((field) =>
+    allowedEditFileds.includes(field)
+  );
+  return isValidEdit;
+};
+
+// const validateOldPassword = (req)
+
+module.exports = { signUpValidation, validateProfileEdit };
