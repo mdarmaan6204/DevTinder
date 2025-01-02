@@ -204,3 +204,146 @@
         });
 
         module.exports = profileRouter;
+
+# Logical DB Query & Compound Indexes
+
+- We can also create check like Schema Method before saving the data in MongoDB know as [Mongoose middleware pre](https://mongoosejs.com/docs/middleware.html#pre)
+- We are using this middleware in connectionRequest Model.
+- It can be done in API level also.
+
+        connectionRequestSchema.pre("save", function () {
+        const connectionRequest = this;
+        if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
+            throw new Error("You can't send request to yourself");
+        }
+        });
+        const ConnectionRequestModel = mongoose.model(
+        "ConnectionRequest",
+        connectionRequestSchema
+        );
+
+### MongoDB Indexing
+- We can do indexing of the DB by using __unique as true__ or __index as true__ for that field on which based indexing will be created.
+- Since our email is unique so mongoDb will automatically indexing on the email.
+
+### Compound Indexing
+- Indexing on the basisi of multiple fields like we are checking for duplicate connection we can index on the basis of __fromUserId and toUserId__
+- This will speed up the MongoDB query for __existingConnection__ check.
+
+
+        connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
+
+
+- Let suppose we have to query user on the basis of their full name then it is prefer to create compound index as
+
+        connectionRequestSchema.index({ fname: 1, lname: 1 });
+
+- Final __connectionRequest.js__
+
+        const mongoose = require("mongoose");
+        const connectionRequestSchema = new mongoose.Schema(
+        {
+            fromUserId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            },
+
+            toUserId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            },
+            status: {
+            type: String,
+            required: true,
+            enum: {
+                values: ["ignored", "accepted", "interested", "rejected"],
+                message: `{VALUE} is not valid status.`,
+            },
+            },
+        },
+        {
+            timestamps: true,
+        }
+        );
+
+        connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
+
+        connectionRequestSchema.pre("save", function () {
+        const connectionRequest = this;
+        if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
+            throw new Error("You can't send request to yourself");
+        }
+        });
+        const ConnectionRequestModel = mongoose.model(
+        "ConnectionRequest",
+        connectionRequestSchema
+        );
+
+        module.exports = ConnectionRequestModel;
+
+- Final __request.js__
+
+        const express = require("express");
+        const ConnectionRequest = require("../models/connectionRequest");
+        const { userAuth } = require("../middlewares/auth");
+        const User = require("../models/user");
+        const requestRouter = express.Router();
+
+        requestRouter.post(
+        "/request/send/:status/:toUserId",
+        userAuth,
+        async (req, res) => {
+            try {
+            const fromUserId = req.user?._id;
+            const toUserId = req.params?.toUserId;
+            const status = req.params?.status;
+
+            const allowedStatus = ["interested", "ignored"];
+
+            if (!allowedStatus.includes(status)) {
+                return res
+                .status(400)
+                .json({ message: "Invalid status type " + status });
+            }
+
+            const toUser = await User.findById(toUserId);
+            if (!toUser) {
+                return res.status(400).json({ message: "User not found!! " });
+            }
+
+            const existingConnection = await ConnectionRequest.findOne({
+                $or: [
+                { fromUserId, toUserId },
+                { fromUserId: toUserId, toUserId: fromUserId },
+                ],
+            });
+
+            if (existingConnection) {
+                return res.status(400).json({ message: "Connection already exists." });
+            }
+
+            const connectionRequest = new ConnectionRequest({
+                fromUserId,
+                toUserId,
+                status,
+            });
+
+            const data = await connectionRequest.save();
+
+            res.json({
+                message:
+                req.user.fname +
+                " send a " +
+                status +
+                " connection to " +
+                toUser.fname,
+                data: data,
+            });
+            } catch (err) {
+            res.status(400).send("ERROR : " + err);
+            }
+        }
+        );
+
+        module.exports = requestRouter;
+
