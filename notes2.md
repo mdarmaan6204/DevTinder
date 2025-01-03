@@ -22,7 +22,7 @@
 
 **userRouther** (it is related to user)
 * GET /user/connections
-* GET /user/request
+* GET /user/request/received
 * GET /user/feed -: gets others profile in platform
 
 
@@ -345,5 +345,87 @@
         }
         );
 
+        requestRouter.post(
+        "/request/review/:status/:requestId",
+        userAuth,
+        async (req, res) => {
+            try {
+            const loggedInUser = req.user;
+            const { status, requestId } = req.params;
+
+            // Validate the status
+            const allowedStatus = ["accepted", "rejected"];
+            if (!allowedStatus.includes(status)) {
+                return res.status(400).send("Connection status is invalid.");
+            }
+
+            const connectionRequest = await ConnectionRequest.findOne({
+                fromUserId: requestId,
+                toUserId: loggedInUser._id,
+                status: "interested",
+            });
+
+            if (!connectionRequest) {
+                return res.status(400).send("No connection found");
+            }
+
+            connectionRequest.status = status;
+            const data = await connectionRequest.save();
+            res.json({ message: "Connection request " + status, data });
+            } catch (err) {
+            res.status(400).send("ERROR!! : " + err);
+            }
+        }
+        );
+
         module.exports = requestRouter;
 
+### User Router APIs
+
+## Ref & Populate
+- It is like the __JOIN__ in SQL.
+- In __user.js__ we first get the all id of the connection recieved but we need all the details of that user not only the _id , it is not good way to store the id then find each one by one
+- We will create a __refrence__ and populate (extract) the required filed.
+- [ref & populate documentation](https://mongoosejs.com/docs/populate.html)
+- to create a ref we just write the ref : "Schema to which we want to create refreance"
+
+        fromUserId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+        },
+
+        toUserId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+        },
+
+- And then populate the things need after getting the id , below both are corrrect way either array or string.
+
+        const connectionReceived = await ConnectionRequestModel.find({
+            toUserId: loggedInUser._id,
+            status: "interested",
+            }).populate("fromUserId", ["fname", "lname", "age", "gender"]);
+            }).populate("fromUserId", "fname lname  age, gender ");
+
+- Final **/user/request/received** (which connection user received) look like
+
+        userRouter.get("/user/request/received", userAuth, async (req, res) => {
+        try {
+            const loggedInUser = req.user;
+            const connectionReceived = await ConnectionRequestModel.find({
+            toUserId: loggedInUser._id,
+            status: "interested",
+            }).populate("fromUserId", "fname lname  age, gender ");
+
+            res.json({
+            message: "Connection fetch Successfully!",
+            data: connectionReceived,
+            });
+        } catch (err) {
+            res.status(400).send("ERROR : " + err);
+        }
+        });
+
+- 
