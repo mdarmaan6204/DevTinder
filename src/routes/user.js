@@ -1,8 +1,10 @@
 const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequestModel = require("../models/connectionRequest");
-
+const User = require("../models/user");
 const userRouter = express.Router();
+
+const SAFE_USER_DATA = "fname lname  age gender about skills";
 
 userRouter.get("/user/request/received", userAuth, async (req, res) => {
   try {
@@ -10,7 +12,7 @@ userRouter.get("/user/request/received", userAuth, async (req, res) => {
     const connectionReceived = await ConnectionRequestModel.find({
       toUserId: loggedInUser._id,
       status: "interested",
-    }).populate("fromUserId", "fname lname  age, gender ");
+    }).populate("fromUserId", SAFE_USER_DATA);
 
     res.json({
       message: "Connection fetch Successfully!",
@@ -24,7 +26,6 @@ userRouter.get("/user/request/received", userAuth, async (req, res) => {
 userRouter.get("/user/connection", userAuth, async (req, res) => {
   try {
     const loggedInUser = req.user;
-    const SAFE_USER_DATA = "fname lname  age gender about skills";
     const connections = await ConnectionRequestModel.find({
       $or: [
         { fromUserId: loggedInUser._id, status: "accepted" },
@@ -40,6 +41,46 @@ userRouter.get("/user/connection", userAuth, async (req, res) => {
     });
 
     res.json({ message: "Connection Fetch sucessfully", data });
+  } catch (err) {
+    res.status(400).send({ message: "ERROR : " + err });
+  }
+});
+
+userRouter.get("/feed", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+    limit = limit > 50 ? 50 : limit;
+    const skip = (page - 1) * limit;
+
+    const connectionRequest = await ConnectionRequestModel.find({
+      $or: [
+        {
+          fromUserId: loggedInUser._id,
+        },
+        {
+          toUserId: loggedInUser._id,
+        },
+      ],
+    }).select("fromUserId toUserId");
+    const hideUserFromFeed = new Set();
+
+    hideUserFromFeed.add(loggedInUser._id.toString());
+
+    connectionRequest.forEach((conn) => {
+      hideUserFromFeed.add(conn.fromUserId.toString());
+      hideUserFromFeed.add(conn.toUserId.toString());
+    });
+
+    const feedUsers = await User.find({
+      _id: { $nin: Array.from(hideUserFromFeed) },
+    })
+      .select(SAFE_USER_DATA)
+      .skip(skip)
+      .limit(limit);
+
+    res.json({ message: "Feed is ready ", feedUsers });
   } catch (err) {
     res.status(400).send({ message: "ERROR : " + err });
   }

@@ -453,3 +453,58 @@
             res.status(400).send({ message: "ERROR : " + err });
         }
         });
+
+## Pagination
+- If we have more data but we should fetch only some of data one after other like paginaton
+- For pagination we should use **request query** like **/feed?page=1&limit=10**
+
+* Route                        Users    MongoDB 
+* **/feed?page=1&limit=10** => 1-10 -> .skip(0) & .limit(10)
+* **/feed?page=2&limit=10** => 11-20 -> .skip(10) & .limit(10)
+* **/feed?page=3&limit=10** => 21-30 -> .skip(20) & .limit(10)
+
+
+- Final **/user/feed** API
+
+
+        userRouter.get("/feed", userAuth, async (req, res) => {
+        try {
+            const loggedInUser = req.user;
+            const page = parseInt(req.query.page) || 1;
+            let limit = parseInt(req.query.limit) || 10;
+            limit = limit > 50 ? 50 : limit;
+            const skip = (page - 1) * limit;
+
+            const connectionRequest = await ConnectionRequestModel.find({
+            $or: [
+                {
+                fromUserId: loggedInUser._id,
+                },
+                {
+                toUserId: loggedInUser._id,
+                },
+            ],
+            }).select("fromUserId toUserId");
+            const hideUserFromFeed = new Set();
+
+            hideUserFromFeed.add(loggedInUser._id.toString());
+
+            connectionRequest.forEach((conn) => {
+            hideUserFromFeed.add(conn.fromUserId.toString());
+            hideUserFromFeed.add(conn.toUserId.toString());
+            });
+
+            const feedUsers = await User.find({
+            _id: { $nin: Array.from(hideUserFromFeed) },
+            })
+            .select(SAFE_USER_DATA)
+            .skip(skip)
+            .limit(limit);
+
+            res.json({ message: "Feed is ready ", feedUsers });
+        } catch (err) {
+            res.status(400).send({ message: "ERROR : " + err });
+        }
+        });
+
+# App UI        
