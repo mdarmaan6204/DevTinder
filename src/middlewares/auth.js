@@ -5,7 +5,7 @@ const userAuth = async (req, res, next) => {
   try {
     const { token } = req.cookies;
     if (!token) {
-      throw new Error("Token is invalid!!!!");
+      return res.status(401).json({ message: "Unauthorized access." });
     }
 
     const decodedObj = await jwt.verify(token, "dev@tinder123");
@@ -16,7 +16,7 @@ const userAuth = async (req, res, next) => {
     if (!user) {
       throw new Erorr("User not exists.");
     }
-    req.user = user;    
+    req.user = user;
     next();
   } catch (err) {
     res.status(400).send("Error : " + err);
