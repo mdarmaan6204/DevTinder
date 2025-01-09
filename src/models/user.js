@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       validate(value) {
-        if (!["male", "female", "others"].includes(value)) {
+        if (!["Male", "Female", "Others"].includes(value)) {
           throw new Error("Gender is not valid");
         }
       },
@@ -49,7 +49,7 @@ const userSchema = new mongoose.Schema(
     photoUrl: {
       type: String,
       default:
-        "https://www.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_134151661.htm",
+        "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
       validate(value) {
         if (!validator.isURL(value)) {
           throw new Error(" Invalid Photo URL");
@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema(
 userSchema.methods.getJWT = async function () {
   const user = this;
   const token = await jwt.sign({ _id: user._id }, "dev@tinder123", {
-    expiresIn: "7m",
+    expiresIn: "7d",
   });
   return token;
 };
