@@ -32,8 +32,8 @@
 - /xyz matches with /xyz/2 , /xyz/fgld , /xyz/jfnusu/fknsu but not with /x
 
 
-       app.listen(3000, () => {
-       console.log("Server is running on port 3000");
+       app.listen(7777, () => {
+       console.log("Server is running on port 7777");
        });*
 
 TO start the server after any change autmoatically install nodemon => _npm i -g nodemon_
@@ -86,7 +86,7 @@ npm run start => will start using node
 
 - Routing path can be regex too..
 
-For API call _http://localhost:3000/user?user_id=101_ || _http://localhost:3000/user?user_id=101&name=Armaan_
+For API call _http://localhost:7777/user?user_id=101_ || _http://localhost:7777/user?user_id=101&name=Armaan_
 
 - To get the query we use req.qu
     app.get("/user" , (req , res)=> {
@@ -96,7 +96,7 @@ For API call _http://localhost:3000/user?user_id=101_ || _http://localhost:3000/
 
 - For dynamic API routing l
 
-- _http://localhost:3000/user/101_ || _http://localhost:3000/user/101/armaan/20_
+- _http://localhost:7777/user/101_ || _http://localhost:7777/user/101/armaan/20_
 - "/user/:userId" || "/user/:userId/:name/:age"
 >  We get user id by _req.param_
   app.get("/user/:userId" , (req , res)=> {
@@ -255,8 +255,8 @@ app.use("/admin", adminAuth);
         connectDb()
         .then(() => {
             console.log("Database connected successfully");
-            app.listen(3000, () => {
-            console.log("Server is running on port 3000");
+            app.listen(7777, () => {
+            console.log("Server is running on port 7777");
             });
         })
         .catch((err) => {
