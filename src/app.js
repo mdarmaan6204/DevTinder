@@ -2,11 +2,12 @@ const express = require("express");
 const connectDb = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+require("dotenv").config();
 const app = express();
 
 const corsOptions = {
-  origin: ["http://localhost:5173" , "https://devtinder1.netlify.app"],
-  credentials: true ,
+  origin: ["http://localhost:5173", "https://devtinder1.netlify.app"],
+  credentials: true,
 };
 app.use(cors(corsOptions));
 app.use(express.json());

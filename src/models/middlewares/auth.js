@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+const User = require("../user");
 
 const userAuth = async (req, res, next) => {
   try {
@@ -8,7 +8,7 @@ const userAuth = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized access." });
     }
 
-    const decodedObj = await jwt.verify(token, process.env.JWT_SECRET);
+    const decodedObj = await jwt.verify(token, "dev@tinder123");
     const { _id } = decodedObj;
 
     const user = await User.findById(_id);
